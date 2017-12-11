@@ -105,6 +105,30 @@ int main( int argc, char **argv ) {
   for (const std::string& Lib : Opts.LibsToLoad)
     Interp.loadFile(Lib);
 
+  //test code
+  std::cout << "starting inheritance evaluation test (should return 5)." << std::endl;
+  Interp.declare("#include <iostream>");
+  Interp.process(
+	  "class Foo {"
+	  "public:"
+	  "virtual int Add(){return 1;}"
+	  "};"
+  );
+  Interp.process(
+	  "class Bar : public Foo {"
+	  "public:"
+	  "virtual int Add(){return 4 + Foo::Add();}"
+	  "};"
+  );
+  Interp.process(
+	  "Bar* b = new Bar();"
+  );
+  Interp.process(
+	  "printf(\"eval: %d\", b->Add());"
+  );
+
+  
+  
   cling::UserInterface Ui(Interp);
   // If we are not interactive we're supposed to parse files
   if (!Opts.IsInteractive()) {
