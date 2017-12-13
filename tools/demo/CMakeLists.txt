@@ -28,6 +28,24 @@ endif()
 # The project has one binary:
 add_executable(cling-demo cling-demo.cpp)
 
+set_target_properties(cling-demo
+  PROPERTIES ENABLE_EXPORTS 1)
+
+if(MSVC)
+  set_target_properties(cling-demo PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS 1)
+  set(cling_demo_exports
+    ?setValueNoAlloc@internal@runtime@cling@@YAXPEAX00D_K@Z
+    ?setValueNoAlloc@internal@runtime@cling@@YAXPEAX00DM@Z
+    ?getAnotherGlobal@@YAMXZ
+    ?setAnotherGlobal@@YAXM@Z
+  )
+  foreach(sym ${cling_demo_exports})
+    set(cling_demo_link_str "${cling_demo_link_str} /EXPORT:${sym}")
+  endforeach(sym ${cling_demo_exports})
+
+  set_property(TARGET cling-demo APPEND_STRING PROPERTY LINK_FLAGS ${cling_demo_link_str})
+endif()
+
 # ...which links against clingInterpreter (and its dependencies).
 target_link_libraries(cling-demo clingInterpreter)
 
