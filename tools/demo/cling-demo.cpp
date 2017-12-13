@@ -72,6 +72,29 @@ int main(int argc, const char* const* argv) {
   // Create the Interpreter. LLVMDIR is provided as -D during compilation.
   cling::Interpreter interp(argc, argv, LLVMDIR);
 
+  //test code
+  std::cout << "starting inheritance evaluation test (should return 5)." << std::endl;
+  interp.declare("#include <iostream>");
+  interp.process(
+	  "class Foo {"
+	  "public:"
+	  "virtual int Add(){return 1;}"
+	  "};"
+  );
+  interp.process(
+	  "class Bar : public Foo {"
+	  "public:"
+	  "virtual int Add(){return 4 + Foo::Add();}"
+	  "};"
+  );
+  interp.process(
+	  "Bar* b = new Bar();"
+  );
+  interp.process(
+	  "printf(\"eval: %d\", b->Add());"
+  );
+
+
   useHeader(interp);
   useSymbolAddress(interp);
   usePointerLiteral(interp);
